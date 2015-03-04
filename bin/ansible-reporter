@@ -65,7 +65,7 @@ if args.by_host:
     except RunnerError, emsg:
         script.exit(1, emsg)
 
-    for result in data.results['contacted']:
+    for result in sorted(data.results['contacted'], lambda a, b: cmp(a.host, b.host)):
         if args.json:
             result.write_to_directory(args.output_directory, result_formatter_json, 'json')
         else:
@@ -84,7 +84,7 @@ else:
         script.message('%s' % data.to_json())
 
     else:
-        for result in data.results['contacted']:
+        for result in sorted(data.results['contacted'], lambda a, b: cmp(a.host, b.host)):
             script.message('%s\n' % result.format(result_formatter))
 
         for result in data.results['dark']:
