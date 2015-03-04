@@ -4,7 +4,7 @@ import glob
 
 from setuptools import setup, find_packages
 
-VERSION='1.4'
+VERSION='1.5'
 
 setup(
     name = 'ansiblereporter',
@@ -13,12 +13,12 @@ setup(
     author = 'Ilkka Tuohela',
     author_email = 'hile@iki.fi',
     version = VERSION,
-    url = 'http://tuohela.net/packages/ansiblereporter',
+    url = 'https://github.com/codento/ansiblereporter/',
     license = 'PSF',
     packages = find_packages(),
     scripts = glob.glob('bin/*'),
     install_requires = (
-        'ansible>=1.8.2',
+        'ansible>=1.8.4',
         'boto',
         'seine>=2.5.0',
         'systematic>=4.2.3',
