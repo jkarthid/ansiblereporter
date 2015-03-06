@@ -15,7 +15,7 @@ from systematic.log import Logger
 from ansible.constants import DEFAULT_MODULE_NAME, DEFAULT_MODULE_PATH, DEFAULT_MODULE_ARGS, \
                               DEFAULT_TIMEOUT, DEFAULT_HOST_LIST, DEFAULT_PRIVATE_KEY_FILE, \
                               DEFAULT_FORKS, DEFAULT_REMOTE_PORT, DEFAULT_PATTERN, \
-                              DEFAULT_SUDO_USER, active_user
+                              DEFAULT_SUDO_USER, DEFAULT_HOST_LIST, active_user
 
 from ansible.errors import AnsibleError
 from ansible.inventory import Inventory
@@ -24,30 +24,7 @@ from ansiblereporter import RunnerError
 from ansiblereporter.result import PlaybookRunner, AnsibleRunner
 
 
-DEFAULT_INVENTORY_PATHS = (
-    os.environ.get('ANSIBLE_HOSTS', None),
-    os.path.expanduser('~/.ansible.hosts'),
-    DEFAULT_HOST_LIST,
-)
-
-
 logger = Logger().default_stream
-
-
-def find_inventory():
-    """Locate ansible inventory
-
-    Return first ansible inventory file matching paths in
-    DEFAULT_INVENTORY_PATHS.
-    """
-    for hostlist in DEFAULT_INVENTORY_PATHS:
-        if hostlist is None:
-            continue
-
-        if os.path.isfile(hostlist):
-            return hostlist
-
-    return None
 
 
 def create_directory(directory):
@@ -131,7 +108,7 @@ class AnsibleScript(GenericAnsibleScript):
         self.add_default_arguments()
 
     def add_common_arguments(self):
-        self.add_argument('-i', '--inventory', default=find_inventory(), help='Inventory path')
+        self.add_argument('-i', '--inventory', default=DEFAULT_HOST_LIST, help='Inventory path')
         self.add_argument('-M', '--module-path', default=DEFAULT_MODULE_PATH, help='Ansible module path')
         self.add_argument('-T', '--timeout', type=int, default=DEFAULT_TIMEOUT, help='Response timeout')
         self.add_argument('-u', '--user', default=active_user, help='Remote user')
@@ -193,7 +170,7 @@ class PlaybookScript(GenericAnsibleScript):
         self.add_argument('playbook', help='Ansible playbook path')
 
     def add_common_arguments(self):
-        self.add_argument('-i', '--inventory', default=find_inventory(), help='Inventory path')
+        self.add_argument('-i', '--inventory', default=DEFAULT_HOST_LIST, help='Inventory path')
         self.add_argument('-M', '--module-path', default=DEFAULT_MODULE_PATH, help='Ansible module path')
         self.add_argument('-T', '--timeout', type=int, default=DEFAULT_TIMEOUT, help='Response timeout')
         self.add_argument('-u', '--user', default=active_user, help='Remote user')
