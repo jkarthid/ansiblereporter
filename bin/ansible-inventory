@@ -198,12 +198,17 @@ script.add_argument('-i', '--inventory', help='Path to inventory')
 c = script.add_subcommand(GroupListCommand('list-groups', 'List ansible inventory groups'))
 
 c = script.add_subcommand(GroupDeleteCommand('delete-groups', 'Delete groups from inventory'))
-c.add_argument('--inventory-path', help='Path where new inventory is stored')
+c.add_argument('-i', '--inventory-path', help='Path where new inventory is stored')
 c.add_argument('groups', nargs='*', help='Groups to delete')
 
 c = script.add_subcommand(GroupAddCommand('add-groups', 'Add empty groups to inventory'))
-c.add_argument('--inventory-path', help='Path where new inventory is stored')
+c.add_argument('-i', '--inventory-path', help='Path where new inventory is stored')
 c.add_argument('groups', nargs='*', help='Groups to add')
+
+c = script.add_subcommand(HostDeleteCommand('delete-hosts', 'Delete hosts from group'))
+c.add_argument('-i', '--inventory-path', help='Path where new inventory is stored')
+c.add_argument('-g', '--group', help='Group to delete hosts from')
+c.add_argument('hosts', nargs='*', help='Hosts to remove')
 
 c = script.add_subcommand(HostListCommand('list-hosts', 'List ansible inventory hosts'))
 c.add_argument('groups', nargs='*', help='Only specified groups')
@@ -211,14 +216,9 @@ c.add_argument('groups', nargs='*', help='Only specified groups')
 c = script.add_subcommand(HostDetailsCommand('host-details', 'Show variables for host'))
 c.add_argument('hosts', nargs='*', help='Only specified hosts')
 
-c = script.add_subcommand(HostDeleteCommand('delete-hosts', 'Delete hosts from group'))
-c.add_argument('--inventory-path', help='Path where new inventory is stored')
-c.add_argument('--group', help='Group to delete hosts from')
-c.add_argument('hosts', nargs='*', help='Hosts to remove')
-
 c = script.add_subcommand(HostAddCommand('add-hosts', 'Add hosts to group'))
 c.add_argument('--inventory-path', help='Path where new inventory is stored')
-c.add_argument('--group', help='Group to add hosts to')
+c.add_argument('-g', '--group', help='Group to add hosts to')
 c.add_argument('hosts', nargs='*', help='Hosts to add')
 
 args = script.parse_args()
