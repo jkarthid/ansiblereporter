@@ -100,12 +100,12 @@ class GenericAnsibleScript(Script):
             self.exit(1, 'No hosts matched')
 
         if args.ask_pass:
-            args.remote_pass = getpass('Enter remote user password: ')
+            args.remote_pass = getpass.getpass('Enter remote user password: ')
         else:
             args.remote_pass = None
 
         if args.ask_sudo_pass:
-            args.sudo_pass = getpass('Enter sudo password: ')
+            args.sudo_pass = getpass.getpass('Enter sudo password: ')
         else:
             args.sudo_pass = None
 
