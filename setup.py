@@ -4,7 +4,7 @@ import glob
 
 from setuptools import setup, find_packages
 
-VERSION='1.1'
+VERSION='1.2'
 
 setup(
     name = 'ansiblereporter',
@@ -19,9 +19,9 @@ setup(
     packages = find_packages(),
     scripts = glob.glob('bin/*'),
     install_requires = (
-        'ansible>=1.7.1',
-        'systematic>=4.0.7',
-        'seine>=2.4.2',
+        'ansible>=1.8.4',
+        'systematic>=4.2.6',
+        'seine>=3.0.0',
         'termcolor',
     ),
 )
