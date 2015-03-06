@@ -19,8 +19,19 @@ By default the command outputs (mostly) ansible compatible output, but making su
 output from each host is printed in order. You can also dump the results in json or
 write them to output files.
 """
+def result_formatter_nocolors(result):
+    output = ''
+    if result.status in ( 'ok', 'error', 'unknown', ):
+        status = '%s | %s | rc=%d >>' % (result.host, result.ansible_status, result.returncode)
+        output += '%s\n%s' % (status, result.stdout)
 
-def result_formatter(result):
+    else:
+        status = '%s | %s => %s' % (result.host, result.ansible_status, result.error)
+        output += '%s\n%s\n%s' % (status, result.stdout, result.stderr)
+
+    return output
+
+def result_formatter_colors(result):
     output = ''
 
     if result.status in ( 'ok', 'error', 'unknown', ):
@@ -45,6 +56,7 @@ def result_formatter_json(result):
 
 
 script = AnsibleScript(description=USAGE)
+script.add_argument('-n', '--nocolors', action='store_true', help='Show results without colors')
 script.add_argument('--json', action='store_true', help='Show results in json format')
 script.add_argument('--by-host', action='store_true', help='Store results to separate files')
 script.add_argument('--output-file', help='Result output file')
@@ -65,11 +77,11 @@ if args.by_host:
     except RunnerError, emsg:
         script.exit(1, emsg)
 
-    for result in data.results['contacted']:
+    for result in sorted(data.results['contacted'], lambda a, b: cmp(a.host, b.host)):
         if args.json:
             result.write_to_directory(args.output_directory, result_formatter_json, 'json')
         else:
-            result.write_to_directory(args.output_directory, result_formatter, 'txt')
+            result.write_to_directory(args.output_directory, result_formatter_nocolors, 'txt')
 
 elif args.output_file:
     try:
@@ -77,17 +89,21 @@ elif args.output_file:
     except RunnerError, emsg:
         script.exit(1, emsg)
 
-    data.write_to_file(args.output_file, formatter=result_formatter, json=args.json)
+    data.write_to_file(args.output_file, formatter=result_formatter_nocolors, json=args.json)
 
 else:
     if args.json:
         script.message('%s' % data.to_json())
 
     else:
-        for result in data.results['contacted']:
-            script.message('%s\n' % result.format(result_formatter))
+        for result in sorted(data.results['contacted'], lambda a, b: cmp(a.host, b.host)):
+            if args.nocolors:
+                script.message('%s\n' % result.format(result_formatter_nocolors))
+            else:
+                script.message('%s\n' % result.format(result_formatter_colors))
 
         for result in data.results['dark']:
-            script.error('%s\n' % result.format(result_formatter))
-
-
+            if args.nocolors:
+                script.error('%s\n' % result.format(result_formatter_nocolors))
+            else:
+                script.error('%s\n' % result.format(result_formatter_colors))
