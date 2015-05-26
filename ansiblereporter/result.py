@@ -667,6 +667,8 @@ class AnsibleRunner(Runner):
 
     def __init__(self, *args, **kwargs):
         self.show_colors = kwargs.pop('show_colors', False)
+        for k in ( 'sudo_user', 'sudo_pass', 'sudo', 'su', 'su_user', 'su_pass', ):
+            kwargs.pop(k, None)
         Runner.__init__(self, *args, **kwargs)
 
     def run(self):
