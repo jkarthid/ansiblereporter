@@ -3,8 +3,7 @@ import os
 import glob
 
 from setuptools import setup, find_packages
-
-VERSION='1.7.0'
+from ansiblereporter import __version__
 
 setup(
     name = 'ansiblereporter',
@@ -12,7 +11,7 @@ setup(
     description = 'Scripts for ansible to report host output data',
     author = 'Ilkka Tuohela',
     author_email = 'hile@iki.fi',
-    version = VERSION,
+    version = __version__,
     url = 'https://github.com/codento/ansiblereporter/',
     license = 'PSF',
     packages = find_packages(),

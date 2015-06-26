@@ -709,6 +709,9 @@ class PlaybookRunner(PlayBook):
         self.callbacks = PlaybookCallbacks()
         self.runner_callbacks = PlaybookRunnerCallbacks(self.results)
 
+        for k in ( 'sudo_user', 'sudo_pass', 'sudo', 'su', 'su_user', 'su_pass', ):
+            kwargs.pop(k, None)
+
         kwargs['callbacks'] =self.callbacks
         kwargs['runner_callbacks'] = self.runner_callbacks
         kwargs['stats'] = self.results

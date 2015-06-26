@@ -12,6 +12,7 @@ import getpass
 from systematic.shell import Script
 from systematic.log import Logger
 
+from ansible import __version__
 from ansible.constants import DEFAULT_MODULE_NAME, DEFAULT_MODULE_PATH, DEFAULT_MODULE_ARGS, \
                               DEFAULT_TIMEOUT, DEFAULT_HOST_LIST, DEFAULT_PRIVATE_KEY_FILE, \
                               DEFAULT_FORKS, DEFAULT_REMOTE_PORT, DEFAULT_PATTERN, \
@@ -57,6 +58,7 @@ class GenericAnsibleScript(Script):
         Script.__init__(self, *args, **kwargs)
         self.runner = None
         self.mode = ''
+        self.add_argument('--version', action='store_true', help='show version')
 
     def SIGINT(self, signum, frame):
         """
@@ -67,8 +69,15 @@ class GenericAnsibleScript(Script):
         else:
             self.exit(1)
 
+    def show_version(self):
+        self.message('{0}'.format(__version__))
+
     def parse_args(self, *args, **kwargs):
         args = Script.parse_args(self, *args, **kwargs)
+
+        if args.version:
+            self.show_version()
+            self.exit(0)
 
         if args.inventory is None:
             self.exit(1, 'Could not detect default inventory path')
@@ -125,7 +134,7 @@ class AnsibleScript(GenericAnsibleScript):
     def add_default_arguments(self):
         self.add_argument('-m', '--module', default=DEFAULT_MODULE_NAME, help='Ansible module name')
         self.add_argument('-a', '--args', default=DEFAULT_MODULE_ARGS, help='Module arguments')
-        self.add_argument('pattern', default=DEFAULT_PATTERN, help='Ansible host pattern')
+        self.add_argument('pattern', nargs='*', default=DEFAULT_PATTERN, help='Ansible host pattern')
 
     def parse_args(self):
         return GenericAnsibleScript.parse_args(self)
@@ -167,7 +176,7 @@ class PlaybookScript(GenericAnsibleScript):
     def __init__(self, *args, **kwargs):
         GenericAnsibleScript.__init__(self, *args, **kwargs)
         self.add_common_arguments()
-        self.add_argument('playbook', help='Ansible playbook path')
+        self.add_argument('playbook', nargs='?', help='Ansible playbook path')
 
     def add_common_arguments(self):
         self.add_argument('-i', '--inventory', default=DEFAULT_HOST_LIST, help='Inventory path')
@@ -194,6 +203,9 @@ class PlaybookScript(GenericAnsibleScript):
         return GenericAnsibleScript.parse_args(self)
 
     def run(self, args):
+        if not args.playbook:
+            self.exit(1, 'No playbook provided')
+
         runner = self.runner_class(
             playbook=args.playbook,
             host_list=os.path.realpath(args.inventory),

@@ -4,8 +4,7 @@ Ansible output report parser hooks
 
 from systematic.log import Logger
 
-__version__ = '1.0'
-
+__version__ = '1.8'
 
 class RunnerError(Exception): pass
 
