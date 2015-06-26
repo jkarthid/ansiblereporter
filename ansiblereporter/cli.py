@@ -12,7 +12,7 @@ import getpass
 from systematic.shell import Script
 from systematic.log import Logger
 
-from ansible import __version__
+from ansible import __version__ as ansible_version
 from ansible.constants import DEFAULT_MODULE_NAME, DEFAULT_MODULE_PATH, DEFAULT_MODULE_ARGS, \
                               DEFAULT_TIMEOUT, DEFAULT_HOST_LIST, DEFAULT_PRIVATE_KEY_FILE, \
                               DEFAULT_FORKS, DEFAULT_REMOTE_PORT, DEFAULT_PATTERN, \
@@ -22,6 +22,7 @@ from ansible.errors import AnsibleError
 from ansible.inventory import Inventory
 
 from ansiblereporter import RunnerError
+from ansiblereporter import __version__ as ansible_reporter_version
 from ansiblereporter.result import PlaybookRunner, AnsibleRunner
 
 
@@ -70,7 +71,10 @@ class GenericAnsibleScript(Script):
             self.exit(1)
 
     def show_version(self):
-        self.message('{0}'.format(__version__))
+        self.message('{0} (ansible {1})'.format(
+            ansible_reporter_version,
+            ansible_version,
+        ))
 
     def parse_args(self, *args, **kwargs):
         args = Script.parse_args(self, *args, **kwargs)

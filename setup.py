@@ -17,7 +17,7 @@ setup(
     packages = find_packages(),
     scripts = glob.glob('bin/*'),
     install_requires = (
-        'ansible>=1.8.4',
+        'ansible>={0}'.format(__version__),
         'systematic>=4.2.6',
         'seine>=3.0.0',
         'boto',
