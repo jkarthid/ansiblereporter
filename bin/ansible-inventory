@@ -214,7 +214,7 @@ c.add_argument('-g', '--group', help='Group to delete hosts from')
 c.add_argument('hosts', nargs='*', help='Hosts to remove')
 
 c = script.add_subcommand(HostListCommand('list-hosts', 'List ansible inventory hosts'))
-c.add_argument('-g', '--group-names', action='true', help='Show group names')
+c.add_argument('-g', '--group-names', action='store_true', help='Show group names')
 c.add_argument('groups', nargs='*', help='Only specified groups')
 
 c = script.add_subcommand(HostDetailsCommand('host-details', 'Show variables for host'))
