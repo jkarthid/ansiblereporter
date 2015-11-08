@@ -39,7 +39,7 @@ class GroupListCommand(InventoryCommand):
         args = self.parse_args(args)
         for group in self.groups:
             if group.name != 'ungrouped':
-                print group.name
+                script.message(group.name)
 
 
 class GroupDeleteCommand(InventoryCommand):
@@ -89,6 +89,7 @@ class GroupAddCommand(InventoryCommand):
 
         self.inventory.save(args.inventory_path)
 
+
 class HostListCommand(InventoryCommand):
     def run(self, args):
         args = self.parse_args(args)
@@ -100,9 +101,11 @@ class HostListCommand(InventoryCommand):
             if not hosts:
                 continue
 
-            print group.name
+            if args.group_names:
+                script.message('# {0}'.format(group.name))
+
             for host in self.ns_sort_items(hosts):
-                print '  %s' % (host.name)
+                script.message(host.name)
 
 
 class HostDetailsCommand(InventoryCommand):
@@ -114,20 +117,20 @@ class HostDetailsCommand(InventoryCommand):
         else:
             args.hosts = sorted(set(host.name for group in self.groups for host in group.hosts))
 
-
         for name in args.hosts:
             host = self.inventory.get_host(name)
             if host is None:
                 self.log.debug('ERROR: Host not found from inventory: %s' % name)
                 continue
 
-            print host.name
+            script.message(host.name)
             hostvars = host.get_variables()
-            for k in sorted(hostvars.keys()):
-                v = hostvars[k]
-                if isinstance(v, list):
-                    v = ','.join(v)
-                print '  %30s %s' % (k, v)
+            for key in sorted(hostvars.keys()):
+                value = hostvars[key]
+                if isinstance(value, list):
+                    value = ','.join(value)
+
+                script.message('  {0:30} {1}'.format(key, value))
 
 
 class HostDeleteCommand(InventoryCommand):
@@ -195,7 +198,7 @@ class HostAddCommand(InventoryCommand):
 script = Script()
 script.add_argument('-i', '--inventory', help='Path to inventory')
 
-c = script.add_subcommand(GroupListCommand('list-groups', 'List ansible inventory groups'))
+c = script.add_subcommand(GroupListCommand('list-groups', 'List ansible inventory group names'))
 
 c = script.add_subcommand(GroupDeleteCommand('delete-groups', 'Delete groups from inventory'))
 c.add_argument('-i', '--inventory-path', help='Path where new inventory is stored')
@@ -211,6 +214,7 @@ c.add_argument('-g', '--group', help='Group to delete hosts from')
 c.add_argument('hosts', nargs='*', help='Hosts to remove')
 
 c = script.add_subcommand(HostListCommand('list-hosts', 'List ansible inventory hosts'))
+c.add_argument('-g', '--group-names', action='true', help='Show group names')
 c.add_argument('groups', nargs='*', help='Only specified groups')
 
 c = script.add_subcommand(HostDetailsCommand('host-details', 'Show variables for host'))
